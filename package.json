@@ -1,0 +1,20 @@
+{
+  "name": "projekt19",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --ci --reporters=default --reporters=jest-junit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "jest-junit": "^17.0.0",
+    "supertest": "^7.3.2"
+  }
+}
