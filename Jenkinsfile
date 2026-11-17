@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent{ label "ci" }
 
     options {
         timestamps()
@@ -36,6 +36,14 @@ pipeline {
             sh "npm test" 
             }
         }
+
+        stage('Docker build') {
+            steps {
+                sh 'docker build -t task-api:local .'
+        }
+
+         
+    }
     }
 
     post {
@@ -46,7 +54,7 @@ pipeline {
         success {
             echo "Build completed successfully"
         }
-        failure {
+        okefailure {
             echo "Build failed - check logs"
         }
     }
