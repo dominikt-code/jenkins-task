@@ -54,7 +54,7 @@ pipeline {
 
         stage("Use Credential") {
             steps {
-                withCredentials([string(credentialsId: "demo-api-key", variable: "API_KEY")]) {
+                withCredentials([string(credentialsId: "demo-api-key-123", variable: "API_KEY")]) {
                     sh 'docker run --rm -e API_KEY=$API_KEY task-api:local node -e "console.log(process.env.API_KEY ? \'API_KEY ustawiony\' : \'brak\')"'
                 }
             }
