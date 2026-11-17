@@ -43,16 +43,16 @@ pipeline {
             }
         }
 
-        stage("Docker Run") {
+        stage("Docker run") {
             steps {
                 sh "docker rm -f task-api-test || true"
                 sh "docker run -d --name task-api-test -p 3000:3000 task-api:local"
                 sh "sleep 3"
-                sh 'CONTAINER_IP=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" task-api-test); curl --retry 5 --retry-delay 2 -f http://$CONTAINER_IP:3000/health'
+                sh 'CONTAINER_IP=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" task-api-test); curl --retry 5 --retry-delay 2 -f http://$CONTAINER_IP:3000/healthz'
             }
         }
 
-        stage("Use Credential") {
+        stage("Use credential") {
             steps {
                 withCredentials([string(credentialsId: "demo-api-key-123", variable: "API_KEY")]) {
                     sh 'docker run --rm -e API_KEY=$API_KEY task-api:local node -e "console.log(process.env.API_KEY ? \'API_KEY ustawiony\' : \'brak\')"'
