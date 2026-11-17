@@ -54,7 +54,7 @@ pipeline {
         success {
             echo "Build completed successfully"
         }
-        okefailure {
+        failure {
             echo "Build failed - check logs"
         }
     }
