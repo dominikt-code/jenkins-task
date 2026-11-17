@@ -37,19 +37,35 @@ pipeline {
             }
         }
 
-        stage('Docker build') {
+        stage("Docker build") {
             steps {
-                sh 'docker build -t task-api:local .'
+                sh "docker build -t task-api:local ."
+            }
         }
 
-         
-    }
+        stage("Docker Run") {
+            steps {
+                sh "docker rm -f task-api-test || true"
+                sh "docker run -d --name task-api-test -p 3000:3000 task-api:local"
+                sh "sleep 3"
+                sh 'CONTAINER_IP=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" task-api-test); curl --retry 5 --retry-delay 2 -f http://$CONTAINER_IP:3000/health'
+            }
+        }
+
+        stage("Use Credential") {
+            steps {
+                withCredentials([string(credentialsId: "demo-api-key", variable: "API_KEY")]) {
+                    sh 'docker run --rm -e API_KEY=$API_KEY task-api:local node -e "console.log(process.env.API_KEY ? \'API_KEY ustawiony\' : \'brak\')"'
+                }
+            }
+        }
     }
 
     post {
         always {
             echo "Pipeline finished for ENV=${params.ENV}, BUILD_VERSION=${params.BUILD_VERSION}"
             archiveArtifacts artifacts: "junit.xml", allowEmptyArchive: true
+            sh "docker rm -f task-api-test || true"
         }
         success {
             echo "Build completed successfully"
