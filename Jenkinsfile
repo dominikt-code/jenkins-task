@@ -48,7 +48,7 @@ pipeline {
                 sh "docker rm -f task-api-test || true"
                 sh "docker run -d --name task-api-test -p 3000:3000 task-api:local"
                 sh "sleep 3"
-                sh 'CONTAINER_IP=$(docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" task-api-test); curl --retry 5 --retry-delay 2 -f http://$CONTAINER_IP:3000/health'
+                sh 'docker exec task-api-test wget -q -O - http://localhost:3000/health'
             }
         }
 
