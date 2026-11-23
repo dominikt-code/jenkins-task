@@ -84,6 +84,7 @@ resource "aws_security_group" "ecs_tasks" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 resource "aws_lb" "api" {
   name               = "task-api-${terraform.workspace}"
   load_balancer_type = "application"
@@ -160,7 +161,6 @@ resource "aws_ecs_task_definition" "api" {
   }])
 }
 
-# serwis — utrzymuje desired_count zadań żywych, podłącza je do target group ALB
 resource "aws_ecs_service" "api" {
   name            = "task-api-${terraform.workspace}"
   cluster         = aws_ecs_cluster.main.id
@@ -171,7 +171,7 @@ resource "aws_ecs_service" "api" {
   network_configuration {
     subnets          = aws_subnet.app_public[*].id
     security_groups  = [aws_security_group.ecs_tasks.id]
-    assign_public_ip = true // uproszczenie z sekcji 00 — zamiast NAT Gateway
+    assign_public_ip = true
   }
 
   load_balancer {
@@ -180,6 +180,5 @@ resource "aws_ecs_service" "api" {
     container_port   = 3000
   }
 
-  # bez tego Terraform może próbować stworzyć service, zanim listener istnieje, i oberwać błąd
   depends_on = [aws_lb_listener.http]
 }
